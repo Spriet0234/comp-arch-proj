@@ -51,21 +51,30 @@ public class CacheSim {
 
         System.out.println("Trace File(s):");
         for (String file : traceFiles) {
-            try {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line;
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                
+                while ((line = reader.readLine()) != null) {
+                    if (line.length() > 0 && line.charAt(0) == 'd'){
+                        continue;
+                    }
+                    if (line.length() > 17) {
+                        String lengthHex = line.substring(5, 7).trim(); 
+                        int length = Integer.parseInt(lengthHex, 16); 
+                        
+                        String addressHex = line.substring(10, 18);
+                        long address = Long.parseLong(addressHex, 16); 
         
-        while ((line = reader.readLine()) != null) {
-            System.out.println(line);
+                        System.out.println("Length: " + length + ", Address: 0x" + Long.toHexString(address));
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                System.err.println("File not found: " + file);
+            } catch (IOException e) {
+                System.err.println("Error reading from file: " + file);
+            }
         }
         
-        reader.close();
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + file);
-        } catch (IOException e) {
-            System.err.println("Error reading from file: " + file);
-        }
-    }
         System.out.println("");
 
         int numSets = (cacheSize * 1024) / (blockSize * associativity);
