@@ -52,17 +52,13 @@ public class CacheSim {
         System.out.println("Trace File(s):");
         for (String file : traceFiles) {
             try {
-        // Creating a BufferedReader to read from the file
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line;
         
-        // Reading each line of the file until the end
         while ((line = reader.readLine()) != null) {
-            // Process each line as needed
             System.out.println(line);
         }
         
-        // Closing the BufferedReader
         reader.close();
         } catch (FileNotFoundException e) {
             System.err.println("File not found: " + file);
