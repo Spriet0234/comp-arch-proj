@@ -48,11 +48,16 @@ public class CacheSim {
         }
 
 
-        /*System.out.println("Trace File(s):");
+         System.out.println("Trace File(s):");
+         for(String file:traceFiles){
+             System.out.println(file);
+         }
+         System.out.println();
+        int i = 0;
         for (String file : traceFiles) {
+
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
-                
                 while ((line = reader.readLine()) != null) {
                     if (line.length() > 0 && line.charAt(0) == 'd'){
                         continue;
@@ -63,8 +68,11 @@ public class CacheSim {
                         
                         String addressHex = line.substring(10, 18);
                         long address = Long.parseLong(addressHex, 16); 
-        
-                        System.out.println("Length: " + length + ", Address: 0x" + Long.toHexString(address));
+                        System.out.println("0x" + Long.toHexString(address) + ": ("+length + ")");
+                        i++;
+                        if (i >= 20) {
+                            break; 
+                        }
                     }
                 }
             } catch (FileNotFoundException e) {
@@ -72,8 +80,9 @@ public class CacheSim {
             } catch (IOException e) {
                 System.err.println("Error reading from file: " + file);
             }
+            
         }
-        */
+        
         System.out.println("");
 
         int numSets = (cacheSize * 1024) / (blockSize * associativity);
