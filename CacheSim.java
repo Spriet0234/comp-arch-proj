@@ -47,9 +47,8 @@ public class CacheSim {
             }
         }
 
-        double total_num_blocks = (cacheSize*1000)/blockSize;
 
-        System.out.println("Trace File(s):");
+        /*System.out.println("Trace File(s):");
         for (String file : traceFiles) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
@@ -74,7 +73,7 @@ public class CacheSim {
                 System.err.println("Error reading from file: " + file);
             }
         }
-        
+        */
         System.out.println("");
 
         int numSets = (cacheSize * 1024) / (blockSize * associativity);
@@ -91,9 +90,35 @@ public class CacheSim {
         System.out.println("Instructions / Time Slice: " + instructions);
         System.out.println("");
 
-        System.out.println("Total # blocks: "+ total_num_blocks);
+        int totalNumBlocks = (cacheSize * 1024) / blockSize;
+        int totalNumRows = totalNumBlocks / associativity;
+        int indexSizeBits = (int)(Math.log(totalNumRows) / Math.log(2));
+        int blockOffsetSize = (int)(Math.log(blockSize) / Math.log(2));
+        int tagSizeBits = 32 - indexSizeBits - blockOffsetSize;
+        int overheadBytes = (totalNumBlocks * (tagSizeBits + 1)) / 8;
+        int impMemSizeBytes = (cacheSize * 1024) + overheadBytes;
+        double cost = (impMemSizeBytes / 1024.0) * 0.15;
 
+        int pageSizeKB = 4; 
+        int numPhysicalPages = (physicalMemory * 1024) / pageSizeKB;
+        int numPagesForSystem = (int)((numPhysicalPages * usage)/100);
+        int pteSizeBits = 19;
+        long totalRamForPageTablesBytes = numPagesForSystem * pteSizeBits ;
 
+        System.out.println("*****Cache Calculated Values*****");
+        System.out.println("Total # Blocks: " + totalNumBlocks);
+        System.out.println("Tag Size: " + tagSizeBits + " bits");
+        System.out.println("Index Size: " + indexSizeBits + " bits");
+        System.out.println("Total Number of Rows (Sets): " + totalNumRows);
+        System.out.println("Overhead Size: " + overheadBytes + " bytes");
+        System.out.println("Implementation Memory Size: " + impMemSizeBytes / 1024.0 + " KB ("+ impMemSizeBytes+" bytes)");
+        System.out.println("Cost: $" + String.format("%.2f", cost) + " @ $0.15 / KB\n");
         
+        System.out.println("*****Physical Memory Calculated Values*****");
+        System.out.println("Number of Physical Pages: " + numPhysicalPages);
+        System.out.println("Number of Pages for System: " + numPagesForSystem);
+        System.out.println("Size of Page Table Entry: " + pteSizeBits + " bits");
+        System.out.println("Total RAM for Page Table(s): " + totalRamForPageTablesBytes + " bytes");
+
     }
 }
