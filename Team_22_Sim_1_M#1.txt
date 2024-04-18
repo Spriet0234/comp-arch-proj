@@ -1,0 +1,53 @@
+Simulation 1
+
+Trace File(s):
+Trace1half.trc
+Corruption2.trc
+A-9_new_1.5.pdf.trc
+
+0x7c81eb33: (1)
+0x7c81eb34: (1)
+0x7c81eb35: (3)
+0x78158e69: (1)
+0x78158e6a: (3)
+0x1763891: (1)
+0x1763892: (1)
+0x1763893: (1)
+0x1763894: (1)
+0x1763895: (1)
+0x1763896: (1)
+0x1763897: (1)
+0x1763898: (1)
+0x1763899: (1)
+0x176389a: (1)
+0x176389b: (1)
+0x176389c: (1)
+0x176389d: (1)
+0x176389e: (1)
+0x176389f: (1)
+0x10c1873: (1)
+0x10c1517: (2)
+
+*****Input Paramenters*****
+Cache Size: 512 KB
+Block Size: 16 bytes
+Associativity: 4
+Replacement Policy: rr
+Physical Memory: 1024 MB
+Percent memory used by system: 75%
+Instructions / Time Slice: 100
+
+*****Cache Calculated Values*****
+Total # Blocks: 32768
+Tag Size: 15 bits
+Index Size: 13 bits
+Total Number of Rows (Sets): 8192
+Overhead Size: 65536 bytes
+Implementation Memory Size: 576.0 KB (589824 bytes)
+Cost: $86.40 @ $0.15 / KB
+
+*****Physical Memory Calculated Values*****
+Number of Physical Pages: 262144
+Number of Pages for System: 196608
+Size of Page Table Entry: 19 bits
+Total RAM for Page Table(s): 3735552 bytes

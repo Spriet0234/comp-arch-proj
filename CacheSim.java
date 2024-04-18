@@ -16,6 +16,14 @@ public class CacheSim {
         int instructions = 0;
         List<String> traceFiles = new ArrayList<>();
 
+        //Part 2
+        long totalAccesses = 0;
+        long cacheHits = 0;
+        long cacheMisses = 0;
+        long compulsoryMisses = 0;
+        long conflictMisses = 0;
+       
+
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "-s":
@@ -47,14 +55,21 @@ public class CacheSim {
             }
         }
 
-
+         int totalNumRows = cacheSize/(blockSize*associativity);
          System.out.println("Trace File(s):");
          for(String file:traceFiles){
              System.out.println(file);
          }
          System.out.println();
-        int i = 0;
-        for (String file : traceFiles) {
+
+         CacheBlock[][] cache = new CacheBlock[totalNumRows][associativity];
+        for (int i = 0; i < totalNumRows; i++) {
+            for (int j = 0; j < associativity; j++) {
+                cache[i][j] = new CacheBlock(); 
+            }
+        }
+
+         for (String file : traceFiles) {
 
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
@@ -69,10 +84,37 @@ public class CacheSim {
                         String addressHex = line.substring(10, 18);
                         long address = Long.parseLong(addressHex, 16); 
                         System.out.println("0x" + Long.toHexString(address) + ": ("+length + ")");
-                        i++;
-                        if (i >= 20) {
-                            break; 
+
+                        //Cache access
+                        int index = (int)((address / blockSize) % totalNumRows);
+                        long tag = address / (blockSize * totalNumRows);
+                        boolean hit = false;
+                        for (int j = 0; j < associativity; j++) {
+                            if (cache[index][j].isValid() && cache[index][j].getTag() == tag) {
+                                cacheHits++;
+                                hit = true;
+                                break;
+                            }
                         }
+                        if (!hit) {
+                            cacheMisses++;
+                            boolean placed = false;
+                            for (int j = 0; j < associativity; j++) {
+                                if (!cache[index][j].isValid()) {
+                                    cache[index][j].setValid(true);
+                                    cache[index][j].setTag(tag);
+                                    compulsoryMisses++;
+                                    placed = true;
+                                    break;
+                                }
+                            }
+                            if (!placed) {
+                                conflictMisses++;
+                                // Simple replacement policy: replace the first block
+                                cache[index][0].setTag(tag);;
+                            }
+                        }
+                        totalAccesses++;
                     }
                 }
             } catch (FileNotFoundException e) {
@@ -86,7 +128,7 @@ public class CacheSim {
         System.out.println("");
 
         int numSets = (cacheSize * 1024) / (blockSize * associativity);
-        CacheBlock[][] cache = new CacheBlock[numSets][associativity];
+        //CacheBlock[][] cache = new CacheBlock[numSets][associativity];
 
 
         System.out.println("*****Input Paramenters*****");
@@ -100,7 +142,6 @@ public class CacheSim {
         System.out.println("");
 
         int totalNumBlocks = (cacheSize * 1024) / blockSize;
-        int totalNumRows = totalNumBlocks / associativity;
         int indexSizeBits = (int)(Math.log(totalNumRows) / Math.log(2));
         int blockOffsetSize = (int)(Math.log(blockSize) / Math.log(2));
         int tagSizeBits = 32 - indexSizeBits - blockOffsetSize;
@@ -128,6 +169,18 @@ public class CacheSim {
         System.out.println("Number of Pages for System: " + numPagesForSystem);
         System.out.println("Size of Page Table Entry: " + pteSizeBits + " bits");
         System.out.println("Total RAM for Page Table(s): " + totalRamForPageTablesBytes + " bytes");
+
+        System.out.println("***** CACHE SIMULATION RESULTS *****");
+        System.out.println("Total Cache Accesses: " + totalAccesses);
+        System.out.println("Cache Hits: " + cacheHits);
+        System.out.println("Cache Misses: " + cacheMisses);
+        System.out.println("Compulsory Misses: " + compulsoryMisses);
+        System.out.println("Conflict Misses: " + conflictMisses);
+        double hitRate = ((double)cacheHits / totalAccesses) * 100;
+        double missRate = 100 - hitRate;
+        System.out.println("Cache Hit Rate: " + String.format("%.4f", hitRate) + "%");
+        System.out.println("Cache Miss Rate: " + String.format("%.4f", missRate) + "%");
+    
 
     }
 }

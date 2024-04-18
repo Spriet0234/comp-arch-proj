@@ -1,5 +1,5 @@
 public class CacheBlock {
-    private int tag;
+    private long tag;
     private boolean valid;
     private long lastAccessTime; 
 
@@ -9,11 +9,11 @@ public class CacheBlock {
         this.lastAccessTime = 0; 
     }
 
-    public int getTag() {
+    public long getTag() {
         return tag;
     }
 
-    public void setTag(int tag) {
+    public void setTag(long tag) {
         this.tag = tag;
     }
 
